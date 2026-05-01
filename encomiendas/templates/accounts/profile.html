@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mi Perfil - Sistema de Encomiendas{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3"><i class="fas fa-user-circle me-2 text-primary"></i>Mi Perfil</h2>
+    <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i>Volver
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow mb-4 border-0">
+            <div class="card-body text-center">
+                <div class="avatar-circle mb-3 mx-auto shadow-sm">
+                    <span class="initials">{{ user.full_name|slice:":1" }}</span>
+                </div>
+                <h4>{{ user.full_name }}</h4>
+                <p class="text-muted">{{ user.perfil.perfil_nombre|default:"Usuario" }}</p>
+                <hr>
+                <div class="d-grid">
+                    <button class="btn btn-outline-primary">
+                        <i class="fas fa-camera me-2"></i>Cambiar Foto
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow border-0">
+            <div class="card-header bg-white border-bottom-0 pt-3">
+                <h5 class="mb-0">Acceso Rápido</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush rounded-bottom">
+                    <a href="#" class="list-group-item list-group-item-action border-0">
+                        <i class="fas fa-key me-2 text-muted"></i>Cambiar Contraseña
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action border-0">
+                        <i class="fas fa-history me-2 text-muted"></i>Historial de Actividades
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action border-0">
+                        <i class="fas fa-cog me-2 text-muted"></i>Preferencias
+                    </a>
+                    <a href="{% url 'logout' %}" class="list-group-item list-group-item-action text-danger border-0">
+                        <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card shadow border-0">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center border-bottom-0 pt-3">
+                <h5 class="mb-0">Información Personal</h5>
+                <button class="btn btn-sm btn-primary edit-profile-btn">
+                    <i class="fas fa-edit me-1"></i>Editar
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="view-mode">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1 text-muted small text-uppercase fw-bold">Nombre Completo:</p>
+                            <h5 class="fw-normal">{{ user.full_name }}</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1 text-muted small text-uppercase fw-bold">Nombre de Usuario:</p>
+                            <h5 class="fw-normal">{{ user.username }}</h5>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1 text-muted small text-uppercase fw-bold">Correo Electrónico:</p>
+                            <h5 class="fw-normal">{{ user.email|default:"No especificado" }}</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1 text-muted small text-uppercase fw-bold">Teléfono Móvil:</p>
+                            <h5 class="fw-normal">{{ user.mobile|default:"No especificado" }}</h5>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1 text-muted small text-uppercase fw-bold">Perfil:</p>
+                            <h5 class="fw-normal">{{ user.perfil.perfil_nombre|default:"Usuario" }}</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1 text-muted small text-uppercase fw-bold">Último Acceso:</p>
+                            <h5 class="fw-normal">{{ user.last_login|date:'d/m/Y H:i' }}</h5>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="edit-mode" style="display: none;">
+                    <form method="post" action="{% url 'profile_update' %}">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="full_name" class="form-label fw-bold">Nombre Completo*</label>
+                                <input type="text" class="form-control" id="full_name" name="full_name" value="{{ user.full_name }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="username" class="form-label fw-bold">Nombre de Usuario*</label>
+                                <input type="text" class="form-control bg-light" id="username" name="username" value="{{ user.username }}" readonly>
+                                <div class="form-text">El nombre de usuario no puede ser modificado.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="email" class="form-label fw-bold">Correo Electrónico*</label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="mobile" class="form-label fw-bold">Teléfono Móvil*</label>
+                                <input type="tel" class="form-control" id="mobile" name="mobile" value="{{ user.mobile|default:'' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="button" class="btn btn-outline-secondary me-2 cancel-edit-btn">Cancelar</button>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i> Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow border-0 mt-4">
+            <div class="card-header bg-white border-bottom-0 pt-3">
+                <h5 class="mb-0">Actividad Reciente</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="timeline px-4 py-3">
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-success"></div>
+                        <div class="timeline-content">
+                            <h6 class="mb-0 fw-bold">Inicio de sesión</h6>
+                            <p class="text-muted mb-0 small">Hoy, 10:45 AM</p>
+                            <p class="mb-0">Inició sesión desde IP local.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-primary"></div>
+                        <div class="timeline-content">
+                            <h6 class="mb-0 fw-bold">Creación de encomienda</h6>
+                            <p class="text-muted mb-0 small">Ayer, 15:30 PM</p>
+                            <p class="mb-0">Registró la encomienda "ENC-00123" hacia Lima.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-white text-center border-top-0 pb-3">
+                <a href="#" class="btn btn-sm btn-outline-primary rounded-pill px-3">Ver Todo el Historial</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

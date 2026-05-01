@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Listado de Encomiendas - Sistema de Encomiendas{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h3 text-primary"><i class="fas fa-boxes me-2"></i>Listado de Encomiendas</h2>
+    <a href="#" class="btn btn-primary shadow-sm">
+        <i class="fas fa-plus me-1"></i>Nuevo Envío
+    </a>
+</div>
+
+<div class="card shadow border-0">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center border-bottom-0 pt-4 pb-0">
+        <h5 class="mb-0 fw-bold">Encomiendas Registradas</h5>
+        
+        <div class="input-group" style="width: 350px;">
+            <input type="text" class="form-control bg-light border-end-0" placeholder="Buscar código..." id="searchArticulo">
+            <button class="btn btn-light border border-start-0" type="button">
+                <i class="fas fa-search text-muted"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light text-muted">
+                    <tr>
+                        <th class="fw-semibold">Código</th>
+                        <th class="fw-semibold">Remitente</th>
+                        <th class="fw-semibold">Destinatario</th>
+                        <th class="fw-semibold">Ruta</th>
+                        <th class="fw-semibold">Estado</th>
+                        <th class="fw-semibold">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for encomienda in encomiendas %}
+                    <tr>
+                        <td class="fw-bold text-primary">{{ encomienda.codigo }}</td>
+                        <td>{{ encomienda.remitente.nombre_completo }}</td>
+                        <td>{{ encomienda.destinatario.nombre_completo }}</td>
+                        <td>{{ encomienda.ruta.origen }} <i class="fas fa-arrow-right text-muted mx-1"></i> {{ encomienda.ruta.destino }}</td>
+                        <td>
+                            {% if encomienda.estado == 'PE' %}
+                            <span class="badge bg-warning rounded-pill px-3 py-2 text-dark"><i class="fas fa-clock me-1"></i>Pendiente</span>
+                            {% elif encomienda.estado == 'TR' %}
+                            <span class="badge bg-info rounded-pill px-3 py-2"><i class="fas fa-truck me-1"></i>En Tránsito</span>
+                            {% elif encomienda.estado == 'EN' %}
+                            <span class="badge bg-success rounded-pill px-3 py-2"><i class="fas fa-check-circle me-1"></i>Entregado</span>
+                            {% elif encomienda.estado == 'CA' %}
+                            <span class="badge bg-danger rounded-pill px-3 py-2"><i class="fas fa-times-circle me-1"></i>Cancelado</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm shadow-sm">
+                                <a href="{% url 'encomienda_detail' encomienda.pk %}" class="btn btn-outline-primary" data-bs-toggle="tooltip" title="Ver detalle">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-warning" data-bs-toggle="tooltip" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            <i class="fas fa-box-open fa-3x mb-3 text-light"></i>
+                            <p class="mb-0">No hay encomiendas registradas aún.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    {% if encomiendas.has_other_pages %}
+    <div class="card-footer bg-white border-top-0 pb-4">
+        <nav aria-label="Paginación">
+            <ul class="pagination justify-content-end mb-0">
+                {% if encomiendas.has_previous %}
+                <li class="page-item">
+                    <a class="page-link shadow-sm text-primary" href="?page={{ encomiendas.previous_page_number }}">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link border-0 bg-light"><i class="fas fa-chevron-left"></i></span>
+                </li>
+                {% endif %}
+                
+                {% for i in encomiendas.paginator.page_range %}
+                    {% if encomiendas.number == i %}
+                    <li class="page-item active shadow-sm">
+                        <span class="page-link border-0">{{ i }}</span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link text-dark" href="?page={{ i }}">{{ i }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if encomiendas.has_next %}
+                <li class="page-item shadow-sm">
+                    <a class="page-link text-primary" href="?page={{ encomiendas.next_page_number }}">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link border-0 bg-light"><i class="fas fa-chevron-right"></i></span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
