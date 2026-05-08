@@ -1,5 +1,7 @@
 import uuid
 from django.db import models
+from django.contrib.auth.models import User
+from pos_project.choices import EstadoOrden
 
 class GrupoArticulo(models.Model):
     nombre_grupo = models.CharField(max_length=100)
@@ -38,3 +40,29 @@ class ListaPrecio(models.Model):
 
     def __str__(self):
         return f"Precios - {self.articulo.descripcion}"
+
+class OrdenCompraCliente(models.Model):
+    pedido_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    nro_pedido = models.CharField(max_length=20, unique=True)
+    cliente = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pedidos_cliente')
+    vendedor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='pedidos_vendedor')
+    importe = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    estado = models.CharField(max_length=20, choices=EstadoOrden.choices, default=EstadoOrden.PENDIENTE)
+    notas = models.TextField(blank=True, null=True)
+    creado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='pedidos_creados')
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Pedido {self.nro_pedido} - {self.cliente.username}"
+
+class ItemOrdenCompraCliente(models.Model):
+    orden = models.ForeignKey(OrdenCompraCliente, on_delete=models.CASCADE, related_name='items')
+    articulo = models.ForeignKey(Articulo, on_delete=models.CASCADE)
+    nro_item = models.PositiveIntegerField()
+    cantidad = models.PositiveIntegerField(default=1)
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    total_item = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"Item {self.nro_item} - {self.articulo.descripcion}"
+

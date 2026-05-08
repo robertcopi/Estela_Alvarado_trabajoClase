@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+{% load account socialaccount %}
+
+{% block title %}{% trans "Sign In" %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg border-0 rounded-lg">
+            <div class="card-header bg-primary text-white text-center py-4">
+                <h3 class="font-weight-light my-2">
+                    <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                
+                {% get_providers as socialaccount_providers %}
+
+                {% if socialaccount_providers %}
+                <p class="text-center text-muted mb-4">Inicia sesión con tu cuenta de redes sociales o usa tu cuenta local.</p>
+
+                <div class="socialaccount_ballot mb-4">
+                    <div class="d-grid gap-2">
+                    {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+                    </div>
+                </div>
+
+                <div class="login-or text-center my-3 text-muted">
+                    <hr class="hr-or">
+                    <span class="span-or">o ingresa con tu usuario</span>
+                </div>
+                {% else %}
+                <p class="text-center text-muted">Si no tienes cuenta, <a href="{{ signup_url }}">regístrate aquí</a>.</p>
+                {% endif %}
+
+                <form class="login" method="POST" action="{% url 'account_login' %}">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="form-floating mb-3">
+                        <input type="text" name="login" class="form-control {% if form.login.errors %}is-invalid{% endif %}" id="id_login" placeholder="Usuario o Email" autocomplete="username" required>
+                        <label for="id_login">Usuario o Email</label>
+                        {% if form.login.errors %}
+                        <div class="invalid-feedback">{{ form.login.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <input type="password" name="password" class="form-control {% if form.password.errors %}is-invalid{% endif %}" id="id_password" placeholder="Contraseña" autocomplete="current-password" required>
+                        <label for="id_password">Contraseña</label>
+                        {% if form.password.errors %}
+                        <div class="invalid-feedback">{{ form.password.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="remember" id="id_remember">
+                        <label class="form-check-label" for="id_remember">
+                            Recordarme
+                        </label>
+                    </div>
+
+                    {% if redirect_field_value %}
+                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                    {% endif %}
+                    
+                    <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                        <a class="small text-decoration-none" href="{% url 'account_reset_password' %}">¿Olvidaste tu contraseña?</a>
+                        <button class="btn btn-primary px-4" type="submit">Entrar</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3 bg-light">
+                <div class="small"><a href="{{ signup_url }}" class="text-decoration-none">¿Necesitas una cuenta? ¡Regístrate!</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.login-or {
+    position: relative;
+    font-size: 0.875rem;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.hr-or {
+    background-color: #cdcdcd;
+    height: 1px;
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+}
+.span-or {
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: -2px;
+    margin-left: -75px;
+    background-color: #fff;
+    width: 150px;
+    text-align: center;
+}
+</style>
+{% endblock %}

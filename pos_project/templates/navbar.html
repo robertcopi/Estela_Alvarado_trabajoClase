@@ -47,6 +47,11 @@
                     <button class="btn btn-outline-light" type="submit"><i class="fas fa-search"></i></button>
                 </form>
                 
+                <a href="{% url 'cart_detail' %}" class="btn btn-outline-light me-2">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge bg-danger">{{ request.session.cart|length }}</span>
+                </a>
+                
                 {% if user.is_authenticated %}
                 <div class="dropdown">
                     <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" 
