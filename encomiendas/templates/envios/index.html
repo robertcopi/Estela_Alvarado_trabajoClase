@@ -31,10 +31,10 @@
                     <i class="fas fa-box fa-2x"></i>
                 </div>
             </div>
-            <div class="card-footer bg-primary-dark d-flex justify-content-between align-items-center py-1">
+            <a href="{% url 'encomiendas_list' %}" class="card-footer bg-primary-dark d-flex justify-content-between align-items-center py-1 text-white text-decoration-none" style="background-color: rgba(0,0,0,0.1);">
                 <small>Ver detalles</small>
                 <i class="fas fa-arrow-circle-right"></i>
-            </div>
+            </a>
         </div>
     </div>
     
@@ -49,10 +49,10 @@
                     <i class="fas fa-truck fa-2x"></i>
                 </div>
             </div>
-            <div class="card-footer bg-success-dark d-flex justify-content-between align-items-center py-1">
+            <a href="{% url 'encomiendas_list' %}" class="card-footer bg-success-dark d-flex justify-content-between align-items-center py-1 text-white text-decoration-none" style="background-color: rgba(0,0,0,0.1);">
                 <small>Ver detalles</small>
                 <i class="fas fa-arrow-circle-right"></i>
-            </div>
+            </a>
         </div>
     </div>
     
@@ -67,10 +67,10 @@
                     <i class="fas fa-users fa-2x"></i>
                 </div>
             </div>
-            <div class="card-footer bg-warning-dark d-flex justify-content-between align-items-center py-1">
+            <a href="{% url 'cliente_list' %}" class="card-footer bg-warning-dark d-flex justify-content-between align-items-center py-1 text-white text-decoration-none" style="background-color: rgba(0,0,0,0.1);">
                 <small>Ver detalles</small>
                 <i class="fas fa-arrow-circle-right"></i>
-            </div>
+            </a>
         </div>
     </div>
     
@@ -85,10 +85,10 @@
                     <i class="fas fa-clock fa-2x"></i>
                 </div>
             </div>
-            <div class="card-footer bg-danger-dark d-flex justify-content-between align-items-center py-1">
+            <a href="{% url 'encomiendas_list' %}" class="card-footer bg-danger-dark d-flex justify-content-between align-items-center py-1 text-white text-decoration-none" style="background-color: rgba(0,0,0,0.1);">
                 <small>Ver detalles</small>
                 <i class="fas fa-arrow-circle-right"></i>
-            </div>
+            </a>
         </div>
     </div>
 </div>
@@ -105,19 +105,19 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-3">
-                        <a href="#" class="btn btn-primary btn-block p-3 mb-3 text-center w-100 h-100 d-flex flex-column justify-content-center">
+                        <a href="{% url 'encomienda_create' %}" class="btn btn-primary btn-block p-3 mb-3 text-center w-100 h-100 d-flex flex-column justify-content-center">
                             <i class="fas fa-truck fa-2x mb-2"></i>
                             <span>Nuevo Envío</span>
                         </a>
                     </div>
                     <div class="col-md-3">
-                        <a href="#" class="btn btn-success btn-block p-3 mb-3 text-center w-100 h-100 d-flex flex-column justify-content-center">
+                        <a href="{% url 'cliente_create' %}" class="btn btn-success btn-block p-3 mb-3 text-center w-100 h-100 d-flex flex-column justify-content-center">
                             <i class="fas fa-user-plus fa-2x mb-2"></i>
                             <span>Nuevo Cliente</span>
                         </a>
                     </div>
                     <div class="col-md-3">
-                        <a href="#" class="btn btn-info btn-block p-3 mb-3 text-center text-white w-100 h-100 d-flex flex-column justify-content-center" style="background-color: #0dcaf0;">
+                        <a href="{% url 'ruta_create' %}" class="btn btn-info btn-block p-3 mb-3 text-center text-white w-100 h-100 d-flex flex-column justify-content-center" style="background-color: #0dcaf0;">
                             <i class="fas fa-route fa-2x mb-2"></i>
                             <span>Nueva Ruta</span>
                         </a>

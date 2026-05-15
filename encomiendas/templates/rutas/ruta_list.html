@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Rutas{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-map-marked-alt text-primary me-2"></i>Gestión de Rutas</h2>
+        <a href="{% url 'ruta_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i>Nueva Ruta
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Código</th>
+                        <th>Origen</th>
+                        <th>Destino</th>
+                        <th>Días de Entrega</th>
+                        <th>Precio Base</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ruta in rutas %}
+                    <tr>
+                        <td>{{ ruta.codigo }}</td>
+                        <td>{{ ruta.origen }}</td>
+                        <td>{{ ruta.destino }}</td>
+                        <td>{{ ruta.dias_entrega }} días</td>
+                        <td>S/ {{ ruta.precio_base }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4">No hay rutas registradas en el sistema.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

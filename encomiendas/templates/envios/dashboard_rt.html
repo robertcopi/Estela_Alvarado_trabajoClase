@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard en Tiempo Real{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-8">
+            <h2><i class="fas fa-satellite-dish text-primary me-2"></i>Dashboard Tiempo Real</h2>
+            <p class="text-muted">Monitoreo en vivo de cambios de estado en las encomiendas.</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <span id="estado-conexion" class="badge bg-secondary p-2 fs-6">
+                <i class="fas fa-circle-notch fa-spin me-2"></i>Conectando...
+            </span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-stream me-2"></i>Actividad Reciente</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Hora</th>
+                                    <th>Código</th>
+                                    <th>Nuevo Estado</th>
+                                    <th>Observación</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mensajes">
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4" id="empty-state">
+                                        Esperando nuevos eventos...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Establecer conexión WebSocket
+        const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+        const ws_path = ws_scheme + '://' + window.location.host + '/ws/dashboard/';
+        console.log("Conectando a " + ws_path);
+        
+        const ws = new WebSocket(ws_path);
+        const estadoBadge = document.getElementById('estado-conexion');
+        const mensajesTable = document.getElementById('mensajes');
+        const emptyState = document.getElementById('empty-state');
+
+        ws.onopen = function() {
+            console.log("WebSocket conectado");
+            estadoBadge.className = 'badge bg-success p-2 fs-6';
+            estadoBadge.innerHTML = '<i class="fas fa-check-circle me-2"></i>CONECTADO';
+            
+            // Iniciar heartbeats (ping) cada 30 segundos para mantener la conexión viva
+            setInterval(function() {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({tipo: 'ping'}));
+                }
+            }, 30000);
+        };
+
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            console.log("Mensaje recibido:", data);
+            
+            if (data.tipo === 'actualizacion' && data.datos) {
+                // Eliminar el mensaje de "Esperando..." si existe
+                if (emptyState) {
+                    emptyState.remove();
+                }
+
+                // Crear nueva fila para la tabla
+                const tr = document.createElement('tr');
+                tr.className = 'table-info'; // Highlight new rows temporarily
+                
+                // Determinar el color del badge del estado
+                let badgeClass = 'bg-primary';
+                if (data.datos.estado.toLowerCase().includes('entregado')) badgeClass = 'bg-success';
+                if (data.datos.estado.toLowerCase().includes('transito')) badgeClass = 'bg-warning text-dark';
+                
+                tr.innerHTML = `
+                    <td class="align-middle">${data.datos.fecha}</td>
+                    <td class="align-middle fw-bold">${data.datos.codigo}</td>
+                    <td class="align-middle"><span class="badge ${badgeClass}">${data.datos.estado}</span></td>
+                    <td class="align-middle text-muted">${data.datos.observacion || '-'}</td>
+                `;
+                
+                // Insertar al inicio de la tabla
+                mensajesTable.insertBefore(tr, mensajesTable.firstChild);
+                
+                // Quitar el highlight despues de 3 segundos
+                setTimeout(() => {
+                    tr.classList.remove('table-info');
+                }, 3000);
+            }
+        };
+
+        ws.onclose = function() {
+            console.log("WebSocket desconectado");
+            estadoBadge.className = 'badge bg-danger p-2 fs-6';
+            estadoBadge.innerHTML = '<i class="fas fa-times-circle me-2"></i>DESCONECTADO';
+        };
+        
+        ws.onerror = function(error) {
+            console.error("Error de WebSocket:", error);
+        };
+    });
+</script>
+{% endblock %}

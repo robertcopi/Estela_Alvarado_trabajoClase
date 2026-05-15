@@ -46,8 +46,13 @@ class Encomienda(models.Model):
         return f"{self.codigo} — {self.get_estado_display()}"
 
     def clean(self):
-        if self.remitente == self.destinatario:
-            raise ValidationError("El remitente no puede ser el mismo destinatario.")
+        try:
+            if getattr(self, 'remitente_id', None) and getattr(self, 'destinatario_id', None):
+                if self.remitente_id == self.destinatario_id:
+                    raise ValidationError("El remitente no puede ser el mismo destinatario.")
+        except Exception:
+            pass
+        
         if self.peso_kg and self.peso_kg > 50:
              raise ValidationError({"peso_kg": "El peso máximo permitido es de 50 Kg."})
         super().clean()
@@ -111,3 +116,26 @@ class HistorialEstado(models.Model):
 
     def __str__(self):
         return f"{self.encomienda.codigo} a {self.get_estado_nuevo_display()}"
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+@receiver(post_save, sender=HistorialEstado)
+def broadcast_estado_encomienda(sender, instance, created, **kwargs):
+    if created:
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            'dashboard',
+            {
+                'type': 'dashboard_actualizar',
+                'mensaje': f'La encomienda {instance.encomienda.codigo} ha cambiado al estado: {instance.get_estado_nuevo_display()}',
+                'datos': {
+                    'codigo': instance.encomienda.codigo,
+                    'estado': instance.get_estado_nuevo_display(),
+                    'observacion': instance.observacion or '',
+                    'fecha': instance.fecha_cambio.strftime("%d/%m/%Y %H:%M:%S")
+                }
+            }
+        )

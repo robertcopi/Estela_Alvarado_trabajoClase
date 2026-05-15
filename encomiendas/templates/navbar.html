@@ -22,9 +22,9 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="encomiendasDropdown">
                         <li><a class="dropdown-item" href="{% url 'encomiendas_list' %}">Lista de Encomiendas</a></li>
-                        <li><a class="dropdown-item" href="#">Nuevo Envío</a></li>
+                        <li><a class="dropdown-item" href="{% url 'encomienda_create' %}">Nuevo Envío</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Rutas</a></li>
+                        <li><a class="dropdown-item" href="{% url 'ruta_list' %}">Rutas</a></li>
                     </ul>
                 </li>
                 <!-- Dropdown para Clientes -->
@@ -34,8 +34,8 @@
                         <i class="fas fa-users me-1"></i>Clientes
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="clientesDropdown">
-                        <li><a class="dropdown-item" href="#">Lista de Clientes</a></li>
-                        <li><a class="dropdown-item" href="#">Nuevo Cliente</a></li>
+                        <li><a class="dropdown-item" href="{% url 'cliente_list' %}">Lista de Clientes</a></li>
+                        <li><a class="dropdown-item" href="{% url 'cliente_create' %}">Nuevo Cliente</a></li>
                     </ul>
                 </li>
             </ul>
